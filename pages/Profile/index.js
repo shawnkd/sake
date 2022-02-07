@@ -1,19 +1,29 @@
-import {useMoralis} from "react-moralis"
+import {useMoralis, useMoralisQuery} from "react-moralis"
 import {useState, useEffect} from "react"
 import Moralis from "moralis"
 import Header from "../../components/Header"
 import { create as ipfsHttpClient } from "ipfs-http-client";
+import ReactPlayer from "react-player";
+import HoverVideoPlayer from 'react-hover-video-player';
 
-const client = ipfsHttpClient("https://ipfs.infura.io:5001/api/v0");
+
+
 
 export default function Profile() {
+
+  const client = ipfsHttpClient("https://ipfs.infura.io:5001/api/v0");
 
   const [fileUrl, setFileUrl] = useState(null);
   const [value, setValue] = useState(0);
   const [Error, setError] = useState(null);
   const [pic, setPic] = useState();
+
+
+  
   var file;
   let profilePic;
+
+  const {data, error, isLoading} = useMoralisQuery("HighlightVideo", query => query.descending('creatorAddress'))
 
   async function onChange(e) {
     file = e.target.files[0];
@@ -86,7 +96,10 @@ export default function Profile() {
         <div>
         <Header/>
             {isAuthenticated ? (
+              <div>
         <h1 className="flex justify-center text-2xl">Profile</h1>
+        <h1 className="flex justify-center text-md font-bold p-5" >{user.get("ethAddress")}</h1>
+        </div>
       ) : null}
       <main className="">
         {isAuthenticated ? (
@@ -131,6 +144,50 @@ export default function Profile() {
             
           </div>
         ) : null}
+        <div className="flex justify-center">
+          <button className="p-5">my videos</button>
+        </div>
+
+        {data &&
+                data.map((item, index) => (
+                  
+                    <div>
+                    {data[index].get('creatorAddress') && user ? 
+                      <div className="">
+                    <h1 className="flex justify-center">{data[index].get("title")}</h1>
+                      <div className=" flex justify-center pb-6 ">
+                      <HoverVideoPlayer
+                            videoSrc={data[index].get("video")._url}
+                            restartOnPaused
+                            controls
+                            mited={false}
+                            pausedOverlay={
+                                <img
+                                src="thumbnail-image.jpg"
+                                alt=""
+                                style={{
+                                    // Make the image expand to cover the video's dimensions
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: 'cover',
+                                }}
+                                />
+                            }
+                            loadingOverlay={
+                                <div className="loading-overlay">
+                                <div className="loading-spinner" />
+                                </div>
+                            }
+                            />
+                      </div>
+                         {/* <h1>{data[index].get("creatorAddress")}</h1> */}
+                         </div>
+                     : null}
+                    </div>
+            ))
+            
+            }
+
         </main>
         </div>
     )

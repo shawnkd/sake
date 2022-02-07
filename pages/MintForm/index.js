@@ -7,7 +7,7 @@ import LoadingBar from 'react-top-loading-bar';
 import Moralis from "moralis"
 import Header from "../../components/Header"
 
-
+const client = ipfsHttpClient("https://ipfs.infura.io:5001/api/v0");
 
 export default function MintForm() {
     
@@ -45,9 +45,10 @@ export default function MintForm() {
           const highlightFile = new Moralis.Object("HighlightVideo");
           console.log("created moralis object");
           highlightFile.set("title", highlight.title);
+          highlightFile.set("creatorAddress", highlight.creatorAddress)
           highlightFile.set("description", highlight.description);
           highlightFile.set("video", vidfile);
-          highlightFile.set("edition", highlight.editions);
+          highlightFile.set("edition", highlight.supply);
           highlightFile.set("price", highlight.price);
           const uploadedVid = await highlightFile.save();
           console.log(uploadedVid);
