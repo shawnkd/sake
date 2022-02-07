@@ -6,14 +6,20 @@
     "start": "next start"
   },
   "dependencies": {
+    "@tailwindcss/forms": "^0.4.0",
+    "formik": "^2.2.9",
+    "ipfs-http-client": "^56.0.0",
     "moralis": "^1.2.6",
     "next": "latest",
     "react": "^17.0.2",
     "react-countup": "^6.1.1",
     "react-dom": "^17.0.2",
     "react-moralis": "^1.2.2",
+    "react-player": "^2.9.0",
+    "react-top-loading-bar": "^2.1.0",
     "react-twitch-embed": "^2.1.0",
-    "react-twitch-embed-video": "^3.0.2"
+    "react-twitch-embed-video": "^3.0.2",
+    "yup": "^0.32.11"
   },
   "devDependencies": {
     "@types/node": "17.0.4",
