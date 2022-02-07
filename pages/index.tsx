@@ -6,8 +6,7 @@ import CountUp from 'react-countup';
 
 import { useMoralis } from "react-moralis";
 import Header from "../components/Header"
-import MintForm from "./MintForm"
-import LoginButton from "../components/LogInButton"
+
 
 
 export default function Home() {
