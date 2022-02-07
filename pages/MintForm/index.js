@@ -7,9 +7,11 @@ import LoadingBar from 'react-top-loading-bar';
 import Moralis from "moralis"
 import Header from "../../components/Header"
 
-const client = ipfsHttpClient("https://ipfs.infura.io:5001/api/v0");
+
 
 export default function MintForm() {
+
+  const client = ipfsHttpClient("https://ipfs.infura.io:5001/api/v0");
     
     
     const [fileUrl, setFileUrl] = useState(null);
