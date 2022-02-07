@@ -6,6 +6,7 @@ import * as Yup from "yup";
 import LoadingBar from 'react-top-loading-bar';
 import Moralis from "moralis"
 import Header from "../../components/Header"
+import { create as ipfsHttpClient } from "ipfs-http-client";
 
 
 
