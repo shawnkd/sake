@@ -8,7 +8,7 @@
   "dependencies": {
     "@tailwindcss/forms": "^0.4.0",
     "formik": "^2.2.9",
-    "ipfs-http-client": "^56.0.1",
+    "ipfs-http-client": "54.0.2",
     "moralis": "^1.2.6",
     "next": "latest",
     "plyr-react": "^3.2.1",
