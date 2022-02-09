@@ -73,8 +73,8 @@ export default function Profile() {
 
   async function LoadPic() {
     const fetchpic = new Moralis.Query("profilePic");
-    let test = await fetchpic.subscribe();
-    console.log(test);
+    // let test = await fetchpic.subscribe();
+    // console.log(test);
     await fetchpic.equalTo("owner", user.get("ethAddress"));
     const picresult = await fetchpic.find();
     // console.log(picresult);
@@ -93,7 +93,7 @@ export default function Profile() {
 
 
     return(
-        <div>
+        <div className="bg-gg min-h-screen">
         <Header/>
             {isAuthenticated ? (
               <div>
@@ -134,10 +134,10 @@ export default function Profile() {
               required
               type="file"
               name="NFT"
-              className="my-2 mx-4 text-md font-bold rounded-md bg-indigo-500 p-3 text-white "
+              className="my-2 mx-4 text-md font-bold rounded-md bg-new-green p-3 text-white "
               onChange={onChange}
             />
-            <button onClick={setMode} className="text-md font-bold rounded-md bg-indigo-500 p-3 text-white">
+            <button onClick={setMode} className="text-md font-bold rounded-md bg-new-green p-3 text-white">
               {" "}
               Save
             </button>
@@ -151,7 +151,7 @@ export default function Profile() {
         {data &&
                 data.map((item, index) => (
                   
-                    <div>
+                    <div key={index}>
                     {data[index].get('creatorAddress') && user ? 
                       <div className="">
                     <h1 className="flex justify-center">{data[index].get("title")}</h1>
@@ -163,7 +163,7 @@ export default function Profile() {
                             mited={false}
                             pausedOverlay={
                                 <img
-                                src="thumbnail-image.jpg"
+                                src=""
                                 alt=""
                                 style={{
                                     // Make the image expand to cover the video's dimensions

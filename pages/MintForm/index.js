@@ -1,12 +1,12 @@
-import {useMoralis} from 'react-moralis';
+import {useMoralis, useMoralisFile} from 'react-moralis';
 import { useState, useRef } from "react";
 import ReactPlayer from "react-player";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import LoadingBar from 'react-top-loading-bar';
 import Moralis from "moralis"
 import Header from "../../components/Header"
 import { create as ipfsHttpClient } from "ipfs-http-client";
+
 
 
 
@@ -18,8 +18,13 @@ export default function MintForm() {
     const [fileUrl, setFileUrl] = useState(null);
     const [Error, setError] = useState("");
     const [uploaded, setUploaded] = useState(false);
-    const ref = useRef(null)
+  
     const [confirm, setConfirm] = useState()
+    const [file, setFile] = useState()
+
+    // const [videoFile, setVideoFile] = useState();
+    // const [videoFileName, setVideoFileName] = useState();
+    // const [video, setVideo] = useState();
 
     const {
         authenticate,
@@ -30,36 +35,61 @@ export default function MintForm() {
         enableWeb3,
       } = useMoralis();
 
+      // const {
+      //   error,
+      //   isUploading,
+      //   moralisFile,
+      //   saveFile,
+      // } = useMoralisFile();
+
     const saveAsset = async () => {
         try {
           // save the video to ipfs
+
           const videodata = highlight.file;
           const vidfile = new Moralis.File(highlight.file.name, videodata);
-        //   const savedVid = await vidfile.saveIPFS();
-        //   console.log(savedVid);
-        //   console.log("saved video to ipfs");
-          // save the json to ipfs
+          // let vidfile = await saveFile(highlight.file.name, videodata);
+          // // const savedVid = await vidfile.saveIPFS();
+          // // console.log(savedVid);
+          // // console.log("saved video to ipfs");
+
+          // // save the json to ipfs
           const jsonfile = new Moralis.File("file.json", {
             base64: btoa(JSON.stringify(highlight)),
           });
+
+          
+
     
           //save video w Moralis Object
     
           const highlightFile = new Moralis.Object("HighlightVideo");
           console.log("created moralis object");
           highlightFile.set("title", highlight.title);
+          console.log("set Title");
           highlightFile.set("creatorAddress", highlight.creatorAddress)
+          console.log("set creatorAddress");
           highlightFile.set("description", highlight.description);
+          console.log("set description");
           highlightFile.set("video", vidfile);
-          highlightFile.set("edition", highlight.supply);
+          console.log("set video");
+          highlightFile.set("supply", highlight.supply);
+          console.log("set supply");
           highlightFile.set("price", highlight.price);
+          console.log("set price");
           const uploadedVid = await highlightFile.save();
           console.log(uploadedVid);
           console.log("uploaded video to cloud");
           setUploaded(true)
           const savedFile = await jsonfile.saveIPFS();
+
+          
+  
           console.log("i saved this file first", savedFile);
           console.log("saved json to ipfs");
+          const savedVid = await vidfile.saveIPFS();
+          console.log(savedVid);
+          console.log("saved video to ipfs");
         } catch (err) {
           setError(err);
           console.log("error error error error", Error);
@@ -120,7 +150,7 @@ export default function MintForm() {
         }),
         onSubmit: (values) => {
           setTimeout(async () => {
-            () => ref.current.continuousStart()
+            
             await setHighlight({
               creatorAddress: user.get("ethAddress").toString(),
               title: values.title,
@@ -137,7 +167,7 @@ export default function MintForm() {
             //   console.log(values.price)
             console.log(await highlight)
             console.log("submit")
-            ref.current.complete()
+            
           }, 400);
            ;
         },
@@ -145,17 +175,17 @@ export default function MintForm() {
 
 
     return(
-      <div>
+      <div className="min-h-screen bg-gg">
       <Header/>
-      <div className="flex min-h-screen flex-col items-center justify-center py-2">
-      <main className="flex w-full flex-1 flex-col items-center justify-center px-20 text-center">
+      <div className="flex  flex-col items-center justify-center py-2">
+      <main className="bg-custom-gray rounded-2xl shadow-md  flex  flex-1 flex-col items-center justify-center px-20 text-center">
         <div className="w-full max-w-xs ">
         
-        <LoadingBar color='new-green' ref={ref} />
+        
         { isAuthenticated && !uploaded ? <div>
-            <h1>Mint Form</h1>
+            <h1 className="text-2xl text-white font-bold pt-8">Create a Highlight</h1>
             <form 
-            className="bg-custom-gray shadow-md rounded px-8 pt-6 pb-8 mb-4"
+            className="rounded px-8 pt-6 pb-8 mb-4"
             onSubmit={formik.handleSubmit}
             >
                 <div className="mb-4">
@@ -186,10 +216,10 @@ export default function MintForm() {
                 <div className="mb-4">
                 {fileUrl !== null && file !== null ? (
                   <>
-                    <label htmlFor="text">Preview Clip</label>
+                    <label htmlFor="text" className="text-white text-sm font-bold">Preview Clip</label>
 
-                    <div style={{ border: "3px solid #6bf1a7" }} className=" ">
-                      <ReactPlayer playing={true} controls url={fileUrl} />
+                    <div className="flex flex-col items-center justify-center">
+                      <ReactPlayer className='' playing={true} controls url={fileUrl} />
                     </div>
                   </>
                 ) : (
@@ -241,9 +271,7 @@ export default function MintForm() {
                 </div>
             </form>
             </div>:<div className="flex items-center justify-center space-x-2">
-                    <div clasNamw="spinner-border animate-spin inline-block w-12 h-12 border-4 rounded-full" role="status">
-                        <span className="visually-hidden">Loading...</span>
-                    </div>
+                    
                     <div className="spinner-grow inline-block w-12 h-12 bg-current rounded-full opacity-0" role="status">
                         <span className="visually-hidden">Loading...</span>
                     </div>

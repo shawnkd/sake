@@ -20,17 +20,17 @@ export default function Header() {
 
     return(
         <div className="flex p-4">
-        <h1 className="text-2xl font-bold p-3">molly</h1>
+        <h1 className="text-2xl font-bold p-3 text-white">molly</h1>
 
         <div className="flex flex-auto gap-4 p-3 justify-center items-center place-content-center justify-self-center ">
             <Link href="/Explore">
-          <a className="font-sans font-bold">explore</a>
+          <a className="font-sans font-bold text-white">explore</a>
           </Link>
           <Link href="/Profile">
-          <a className="font-sans font-bold">my tokens</a>
+          <a className="font-sans font-bold text-white">my tokens</a>
           </Link>
           <Link href="/MintForm">
-            <a className="font-sans font-bold">mint</a>
+            <a className="font-sans font-bold text-white">mint</a>
           </Link>
         </div>
 
