@@ -1,11 +1,10 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import ReactTwitchEmbedVideo from "react-twitch-embed-video"
 import { useState } from "react";
-import CountUp from 'react-countup';
 
 import { useMoralis } from "react-moralis";
 import Header from "../components/Header"
+
 
 
 
@@ -19,7 +18,7 @@ export default function Home() {
 
 
   return (
-    <div className="">
+    <div className="bg-gg min-h-screen">
       <Head>
         <title>Create Next App</title>
         <link rel="icon" href="/favicon.ico" />
@@ -38,6 +37,8 @@ export default function Home() {
       <h1>tokens</h1></div> : <h1>count</h1>} */}
       
       
+      
+    
         
 
         

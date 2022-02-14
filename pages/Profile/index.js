@@ -1,10 +1,14 @@
 import {useMoralis, useMoralisQuery} from "react-moralis"
-import {useState, useEffect} from "react"
+import {useState, useEffect, useRef} from "react"
 import Moralis from "moralis"
 import Header from "../../components/Header"
 import { create as ipfsHttpClient } from "ipfs-http-client";
 import ReactPlayer from "react-player";
+import Router from 'next/router'
 import HoverVideoPlayer from 'react-hover-video-player';
+import Hls from "hls.js";
+// import videojs from '@mux/videojs-kit';
+// import '@mux/videojs-kit/dist/index.css';
 
 
 
@@ -23,7 +27,20 @@ export default function Profile() {
   var file;
   let profilePic;
 
-  const {data, error, isLoading} = useMoralisQuery("HighlightVideo", query => query.descending('creatorAddress'))
+  const {
+    authenticate,
+    isAuthenticated,
+    logout,
+    user,
+    isWeb3Enabled,
+    enableWeb3,
+    isInitialized
+  } = useMoralis();
+
+  const {data, error, isLoading} = useMoralisQuery("HighlightVideo4", query => query.descending('creatorAddress'))
+
+
+  
 
   async function onChange(e) {
     file = e.target.files[0];
@@ -39,7 +56,7 @@ export default function Profile() {
     }
   }
 
-  const { isInitialized, isAuthenticated, user } = useMoralis();
+  //const { isInitialized, isAuthenticated, user } = useMoralis();
   // const ShowFile = () => {
   //   console.log(fileUrl);
   // if (fileUrl !== null) {
@@ -157,7 +174,16 @@ export default function Profile() {
                     <h1 className="flex justify-center">{data[index].get("title")}</h1>
                       <div className=" flex justify-center pb-6 ">
                       <HoverVideoPlayer
-                            videoSrc={data[index].get("video")._url}
+                            videoSrc={() => {
+                              
+                              let src= "https://stream.mux.com/" + data[index].get("video") + ".m3u8";
+                              let vid = src;
+
+                              var hls = new Hls();
+                              hls.loadSource(src);
+                              return hls.attachMedia(vid);
+                              
+                              }}
                             restartOnPaused
                             controls
                             mited={false}

@@ -1,11 +1,18 @@
 import {useMoralis, useMoralisFile} from 'react-moralis';
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, } from "react";
 import ReactPlayer from "react-player";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Moralis from "moralis"
 import Header from "../../components/Header"
 import { create as ipfsHttpClient } from "ipfs-http-client";
+//import Mux from '@mux/mux-node';
+import * as UpChunk from '@mux/upchunk'
+import useSWR from 'swr'
+//import Mux  from '@mux/mux-node'
+import { useRouter, Router } from 'next/router'
+
+
 
 
 
@@ -13,41 +20,238 @@ import { create as ipfsHttpClient } from "ipfs-http-client";
 export default function MintForm() {
 
   const client = ipfsHttpClient("https://ipfs.infura.io:5001/api/v0");
-    
-    
+  let index = 0;
+
+  const [isUploading, setIsUploading] = useState();
+  const [isPreparing, setIsPreparing] = useState(false)
+  const [progress, setProgress] = useState(null)
+  const [errorMessage, setErrorMessage] = useState('')
+  const inputRef = useRef(null)
+  const [uploadId, setUploadId] = useState()
+  const [uploadUrl, setUploadUrl] = useState(null);
+  const [uploadDone, setUploadDone] = useState(false)
+  const [savedToDB, setSavedToDB] = useState(0);
+  const [playback, setPlayback] = useState();
+
+  const [asset, setAsset] = useState(null);
     const [fileUrl, setFileUrl] = useState(null);
     const [Error, setError] = useState("");
     const [uploaded, setUploaded] = useState(false);
-  
-    const [confirm, setConfirm] = useState()
     const [file, setFile] = useState()
+    
 
-    // const [videoFile, setVideoFile] = useState();
-    // const [videoFileName, setVideoFileName] = useState();
-    // const [video, setVideo] = useState();
+    const [highlight, setHighlight] = useState({
+      creatorAddress: "",
+      title: "",
+      description: "",
+      file: [],
+      supply: "",
+      price: ""
+    });
 
     const {
-        authenticate,
         isAuthenticated,
-        logout,
         user,
-        isWeb3Enabled,
-        enableWeb3,
       } = useMoralis();
 
-      // const {
-      //   error,
-      //   isUploading,
-      //   moralisFile,
-      //   saveFile,
-      // } = useMoralisFile();
+      const fetcher = (url) => {
+        return fetch(url).then((res) => res.json())
+      }
+    
 
-    const saveAsset = async () => {
+      const { data: data, error } = useSWR(`/api/upload/${uploadId}`, fetcher)
+
+      const { data: assetData } = useSWR(`/api/asset/${data && data.upload && data.upload.asset_id}`, fetcher)
+
+      
+
+      //const { assetData, assetError } = useSWR(`/api/asset/${data && data.upload && data.upload.asset_id}`, fetcher)
+
+
+      // const { assetData, assetError } = useSWR(`/api/asset/${asset}`, fetcher)
+      
+      
+      console.log(data && data.upload)
+      console.log(assetData && assetData.asset)
+      
+      // console.log("status: ", data && data.upload && data.upload.status)
+      // console.log("asset: ", data && data.upload && data.upload.asset_id)
+
+      
+      
+
+      
+      // if(data && data.upload && data.upload.status && data.upload.asset_id){
+      //    setAsset(data.upload.asset_id);
+      //   }
+
+      
+      // const { data, error } = useSWR(
+      //   () => ( isPreparing ? `/api/uploads/${uploadId}` : null),
+      //   fetcher,
+      //   { refreshInterval: 5000 },
+      // );
+    
+    
+      // const upload = data && data.upload;
+      // console.log(data)
+      // //setAsset(upload.asset_id)
+      //   //console.log(upload + "upload before")
+      //   useEffect(() => {
+      //     if (upload && upload.asset_id) {
+      //       Router.push({
+      //         pathname: `/asset/${upload.asset_id}`,
+      //         scroll: false,
+      //       })
+      //       //set(upload.asset.id)
+      //     }
+      //   }, [upload])
+      
+    
+      // if (error) return "An error has occurred.";
+      // if (!data) return "Loading...";
+
+      //const { data, error } = useSWR('/api/asset', fetcher)
+
+      const createUpload = async () => {
+        try{
+          return fetch('/api/upload', {
+            method: 'POST',
+          })
+            .then((res) => res.json())
+            .then(({id, url}) => {
+              const upload_id = id;
+              setUploadId(upload_id);
+              console.log("upload id during upload", id)
+              const upload_url = url;
+              setUploadUrl(upload_url)
+              console.log("url: ", url)
+              return url
+            });
+        } catch (e) {
+            console.error('Error in createUpload', e); // eslint-disable-line no-console
+            setErrorMessage('Error creating upload');
+            
+        }
+      }
+
+      const getAsset = async () => {
         try {
-          // save the video to ipfs
+          return fetch(`/api/asset/`, {
+            method: 'GET',
+          })
+          .then((res) => res.json()
+          .then(({asset}) => {
+            //setAsset(asset_id)
+            console.log("asset", asset)
+            
+          }))
+        } catch {
+          console.error('Error in getting asset', e); // eslint-disable-line no-console
+            setErrorMessage('Error getting asset');
+        }
+      }
 
-          const videodata = highlight.file;
-          const vidfile = new Moralis.File(highlight.file.name, videodata);
+
+      const startUpload = async (file) => {
+        console.log("start upload");
+    
+        setIsUploading(true);
+        try {
+          const upload = UpChunk.createUpload({
+            endpoint: createUpload,
+            file: file,
+          });
+
+          
+          console.log(upload, "upload")
+    
+          upload.on('error', (err) => {
+            setErrorMessage(err.detail);
+          });
+    
+          upload.on('progress', (progress) => {
+            setProgress(Math.floor(progress.detail));
+          });
+    
+          upload.on('success', () => {
+            console.log('success upload')
+            setIsPreparing(true);
+          });
+        } catch (err) {
+          setErrorMessage(err.toString());
+          console.log(errorMessage)
+        }
+        setUploadDone(true);
+      };
+
+      const startGetAsset = async () => {
+        console.log("start get asset");
+  
+        try {
+          const get = getAsset({
+            upload_id: uploadId
+          });
+
+          
+          await console.log(get, "get")
+    
+          get.on('error', (err) => {
+            setErrorMessage(err.detail);
+          });
+    
+          get.on('progress', (progress) => {
+            //setProgress(Math.floor(progress.detail));
+          });
+    
+          get.on('success', () => {
+            console.log('success upload')
+            
+          });
+        } catch (err) {
+          setErrorMessage(err.toString());
+          console.log(errorMessage)
+        }
+        
+      };
+
+
+      const saveAsset = async (id) => {
+        console.log("start save asset")
+        if(uploaded == true) {
+          console.log("already uploaded to DB")
+        }
+        try {
+        const videodata = highlight.file;
+        const vidfile = new Moralis.File(highlight.file.name, videodata);
+  
+
+        const highlightFile = new Moralis.Object("HighlightVideo4");
+          console.log("created moralis object");
+          highlightFile.set("title", highlight.title);
+          console.log("set Title");
+          highlightFile.set("creatorAddress", user.get("ethAddress").toString())
+          console.log("set creatorAddress");
+          highlightFile.set("description", highlight.description);
+          console.log("set description");
+          highlightFile.set("video", id)
+          console.log("set video");
+          highlightFile.set("supply", highlight.supply);
+          console.log("set supply");
+          highlightFile.set("price", highlight.price);
+          console.log("set price");
+          
+          
+          const uploadedVid = await highlightFile.save();
+          () => console.log(uploadedVid);
+          console.log("uploaded video to cloud");
+          setUploaded(true)
+  
+          
+          return ;
+
+          
+        
           // let vidfile = await saveFile(highlight.file.name, videodata);
           // // const savedVid = await vidfile.saveIPFS();
           // // console.log(savedVid);
@@ -59,53 +263,14 @@ export default function MintForm() {
           });
 
           
-
-    
+          //await saveHighlight(highlight, vidfile, jsonfile )
           //save video w Moralis Object
-    
-          const highlightFile = new Moralis.Object("HighlightVideo");
-          console.log("created moralis object");
-          highlightFile.set("title", highlight.title);
-          console.log("set Title");
-          highlightFile.set("creatorAddress", highlight.creatorAddress)
-          console.log("set creatorAddress");
-          highlightFile.set("description", highlight.description);
-          console.log("set description");
-          highlightFile.set("video", vidfile);
-          console.log("set video");
-          highlightFile.set("supply", highlight.supply);
-          console.log("set supply");
-          highlightFile.set("price", highlight.price);
-          console.log("set price");
-          const uploadedVid = await highlightFile.save();
-          console.log(uploadedVid);
-          console.log("uploaded video to cloud");
-          setUploaded(true)
-          const savedFile = await jsonfile.saveIPFS();
-
-          
-  
-          console.log("i saved this file first", savedFile);
-          console.log("saved json to ipfs");
-          const savedVid = await vidfile.saveIPFS();
-          console.log(savedVid);
-          console.log("saved video to ipfs");
         } catch (err) {
           setError(err);
           console.log("error error error error", Error);
         }
+      
       };
-
-
-    const [highlight, setHighlight] = useState({
-        creatorAddress: "",
-        title: "",
-        description: "",
-        file: [],
-        supply: "",
-        price: "",
-        uri: ""
-      });
 
       async function onChange(e) {
         let file = e.target.files[0];
@@ -148,31 +313,85 @@ export default function MintForm() {
           supply: Yup.number().positive().integer().required("Required ⚠️"),
           price: Yup.number().positive().required("Required ⚠️"),
         }),
-        onSubmit: (values) => {
-          setTimeout(async () => {
-            
-            await setHighlight({
+        onSubmit: async (values, { setSubmitting }) => {
+          await setTimeout( () => {
+
+            console.log("submit")
+            setSubmitting(false)
+
+            if(!uploadDone) {
+            startUpload(values.file)
+            }
+            console.log(uploadId, "uploadId")
+
+            //console.log(upload, 'upload')
+            console.log(highlight)
+
+            setHighlight({
               creatorAddress: user.get("ethAddress").toString(),
               title: values.title,
               description: values.description,
               file: values.file,
               supply: values.supply,
               price: values.price,
-            });
-            await saveAsset();
-            //   console.log(values.title)
-            //   console.log(values.description)
-            //   console.log(values.file)
-            //   console.log(values.editions)
-            //   console.log(values.price)
-            console.log(await highlight)
-            console.log("submit")
-            
+            }); 
           }, 400);
-           ;
         },
       });
 
+      
+      useEffect(() => {
+        
+        // if(uploadDone && uploadId && !uploaded && (index<1)) {
+          
+          if(data && data.upload && data.upload.status === 'asset_created')
+          {
+          
+          //setAsset(data.upload.asset_id)
+          console.log("status: ", data && data.upload && data.upload.status)
+          console.log("asset id: ", data && data.upload && data.upload.asset_id)
+          
+          
+          // console.log("playback id: ", assetData && assetData.asset && assetData.asset.playback_id)
+
+          index++;
+
+          console.log('getting asset info')
+          // startGetAsset()
+          //getUpload()
+          
+          console.log(assetData && assetData.asset && assetData.asset.playback_id, "playback_id")
+
+          console.log("start upload to moralis",highlight, " and ", assetData && assetData.asset)
+          // saveAsset(assetData && assetData.asset && assetData.asset.playback_id)
+          
+          console.log(index, "index")
+        }
+      
+        // }
+      
+      }, [data && data.upload && data.upload.asset_id])
+
+
+
+
+
+      useEffect(() => {
+        if(assetData && assetData.asset && assetData.asset.playback_id) {
+          console.log(assetData.asset.playback_id, "playback_id")
+          console.log("start upload to moralis",highlight, " and ", assetData && assetData.asset)
+          saveAsset(assetData && assetData.asset && assetData.asset.playback_id)
+
+        }
+      }, [assetData && assetData.asset && assetData.asset.playback_id])
+      
+      // useEffect(() => {
+      //   if(uploadDone && uploadId) {
+      //     console.log('getting asset info')
+      //     startGet()
+      //   }
+      // }, [uploadDone])
+      
 
     return(
       <div className="min-h-screen bg-gg">
@@ -182,14 +401,14 @@ export default function MintForm() {
         <div className="w-full max-w-xs ">
         
         
-        { isAuthenticated && !uploaded ? <div>
+        { isAuthenticated  ? <div>
             <h1 className="text-2xl text-white font-bold pt-8">Create a Highlight</h1>
             <form 
             className="rounded px-8 pt-6 pb-8 mb-4"
             onSubmit={formik.handleSubmit}
             >
                 <div className="mb-4">
-                <label className="px-6 flex block text-white text-sm font-bold mb-2" for="title">
+                <label className="px-6 flex block text-white text-sm font-bold mb-2" htmlFor="title">
                     Title
                 </label>
                 {/* <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="Username"></input> */}
@@ -199,7 +418,7 @@ export default function MintForm() {
                 ) : null}
                 </div>
                 <div className="mb-4">
-                <label className="px-6 flex block text-white text-sm font-bold mb-2" for="title">
+                <label className="px-6 flex block text-white text-sm font-bold mb-2" htmlFor="title">
                     Description
                 </label>
                 <textarea
@@ -223,13 +442,13 @@ export default function MintForm() {
                     </div>
                   </>
                 ) : (
-                  console.log("not not null")
+                  console.log("preview empty")
                 )}
                 
                 <label  className="px-6 flex block text-white text-sm font-bold mb-2" type="file">
                     Video File
                 </label>
-                <input onChange={onChange} className="px-5 text-white" type="file"/>
+                <input onChange={onChange} className="px-5 text-white" type="file" ref={inputRef}/>
                 </div>
                 {formik.touched.file && formik.errors.file ? (
                   <div>{formik.errors.file}</div>
@@ -238,7 +457,7 @@ export default function MintForm() {
 
 
                 <div className="mb-4">
-                <label className="px-6 flex block text-white text-sm font-bold mb-2" for="supply">
+                <label className="px-6 flex block text-white text-sm font-bold mb-2" htmlFor="supply">
                     Supply
                 </label>
                 <input
@@ -255,7 +474,7 @@ export default function MintForm() {
 
 
                 <div className="mb-6">
-                <label className="px-6 flex block text-white text-sm font-bold mb-2" for="title">
+                <label className="px-6 flex block text-white text-sm font-bold mb-2" htmlFor="title">
                     Price
                 </label>
                 <input id="price" {...formik.getFieldProps("price")} type="text" className="px-4 py-3 rounded-md"/>
@@ -265,16 +484,23 @@ export default function MintForm() {
                 ) : null}
 
                 <div className="flex items-center justify-center">
+                { !isUploading ?
                 <button type="submit" className="bg-new-green hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
                     Mint
                 </button>
+                :
+                <div>
+                  
+                  <h1 className="bg-new-green hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Loading...</h1>
                 </div>
+                
+                }
+                </div>
+                
             </form>
             </div>:<div className="flex items-center justify-center space-x-2">
                     
-                    <div className="spinner-grow inline-block w-12 h-12 bg-current rounded-full opacity-0" role="status">
-                        <span className="visually-hidden">Loading...</span>
-                    </div>
+                    
                     </div>
  }
         </div>

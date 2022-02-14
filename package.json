@@ -6,8 +6,13 @@
     "start": "next start"
   },
   "dependencies": {
+    "@mux/mux-node": "^4.0.0",
+    "@mux/upchunk": "^2.2.2",
+    "@mux/videojs-kit": "^0.9.1",
     "@tailwindcss/forms": "^0.4.0",
     "formik": "^2.2.9",
+    "fs-web": "^1.0.1",
+    "hls.js": "1.1.4-0.canary.8229",
     "ipfs-http-client": "54.0.2",
     "moralis": "^1.2.6",
     "next": "latest",
@@ -15,12 +20,14 @@
     "react": "^17.0.2",
     "react-countup": "^6.1.1",
     "react-dom": "^17.0.2",
+    "react-hls-player": "^3.0.7",
     "react-hover-video-player": "^9.4.0",
     "react-moralis": "^1.2.2",
     "react-player": "^2.9.0",
     "react-top-loading-bar": "^2.1.0",
     "react-twitch-embed": "^2.1.0",
     "react-twitch-embed-video": "^3.0.2",
+    "swr": "^1.2.1",
     "yup": "^0.32.11"
   },
   "devDependencies": {

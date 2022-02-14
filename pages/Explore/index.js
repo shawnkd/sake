@@ -2,14 +2,25 @@ import {useMoralis, useMoralisQuery} from 'react-moralis'
 import Header from "../../components/Header"
 const Moralis = require("moralis");
 import ReactPlayer from "react-player";
+import React, { useEffect, useRef } from "react";
 import HoverVideoPlayer from 'react-hover-video-player';
+// import fs from 'fs'
+// import Mux from '@mux/mux-node'
+// import Hls from 'hls.js';
 
 
 
 export default function Explore() {
 
+    const src = "https://stream.mux.com/{PLAYBACK_ID}.m3u8";
+
     const { isInitialized, isAuthenticated, user } = useMoralis();
     const {data, error, isLoading} = useMoralisQuery("HighlightVideo", query => query.descending('video'))
+    // const { Video } = new Mux(process.env.MUX_TOKEN_ID, process.env.MUX_TOKEN_SECRET);
+
+    
+    
+    
 
     
     //const vid6 = data[6];
@@ -40,6 +51,9 @@ export default function Explore() {
     return(
         <div className="bg-gg min-h-screen">
         <Header/>
+        
+        
+        
         <h1 className="text-2xl font-bold flex flex-auto justify-center">Explore</h1>
         <div className="flex min-h-screen flex-col items-center justify-center py-2">
         <main className="flex w-full flex-1 flex-col items-center justify-center px-20 text-center">
@@ -98,7 +112,7 @@ export default function Explore() {
                     <h1 className="flex justify-center">{data[index].get("title")}</h1>
                       <div className=" flex justify-center pb-6 ">
                       <HoverVideoPlayer
-                            videoSrc={data[index].get("video")._url}
+                            videoSrc={data[index].get("video")}
                             restartOnPaused
                             controls
                             mited={false}
