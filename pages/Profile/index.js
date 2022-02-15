@@ -38,6 +38,8 @@ export default function Profile() {
     isInitialized
   } = useMoralis();
 
+  // const userAddress = () =>  user.get("ethAddress");
+
   const {data, error, isLoading} = useMoralisQuery("HighlightVideo4", query => query.descending('creatorAddress'))
 
 
@@ -135,16 +137,7 @@ export default function Profile() {
   //   }
   // }, []);
 
-  const getVideo = (link) => {
-    if(Hls.isSupported()) {
-      const videoElement = document.querySelector('.hls-hover-video');
-      var hls = new Hls();
-       hls.loadSource(link);
-       return hls.attachMedia(videoElement)
-      //return link;
-    }
-    
-  }
+  // console.log(() => user.get("ethAddress"))
 
 
 
@@ -209,7 +202,7 @@ export default function Profile() {
                 data.map((item, index) => (
                   
                     <div key={index}>
-                    {data[index].get('creatorAddress') && user ? 
+                    {data[index].get('creatorAddress') === user.get("ethAddress")  ? 
                       <div className="">
                     <h1 className="flex justify-center">{data[index].get("title")}</h1>
                       <div className=" flex justify-center pb-6 ">
