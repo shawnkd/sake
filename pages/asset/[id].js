@@ -17,11 +17,11 @@ export default function Asset() {
 
 //   const { data, error } = useSWR(`/api/asset/${moralisData.get('video')}`, fetcher, { refreshInterval: 5000 })
 
-//   const { data, error } = useSwr(
-//     () => (router.query.id ? `/api/asset/${moralisData.get('video')}` : null),
-//     fetcher,
-//     { refreshInterval: 5000 }
-//   )
+  const { data, error } = useSwr(
+    () => (router.query.id ? `/api/asset/${moralisData.get('video')}` : null),
+    fetcher,
+    { refreshInterval: 5000 }
+  )
 
   const asset = data && data.asset
 
