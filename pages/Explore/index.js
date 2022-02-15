@@ -4,6 +4,7 @@ const Moralis = require("moralis");
 import ReactPlayer from "react-player";
 import React, { useEffect, useRef } from "react";
 import HoverVideoPlayer from 'react-hover-video-player';
+import VideoPlayer from "../../components/VideoPlayer"
 // import fs from 'fs'
 // import Mux from '@mux/mux-node'
 // import Hls from 'hls.js';
@@ -12,10 +13,10 @@ import HoverVideoPlayer from 'react-hover-video-player';
 
 export default function Explore() {
 
-    const src = "https://stream.mux.com/{PLAYBACK_ID}.m3u8";
+    //const src = "https://stream.mux.com/{PLAYBACK_ID}.m3u8";
 
     const { isInitialized, isAuthenticated, user } = useMoralis();
-    const {data, error, isLoading} = useMoralisQuery("HighlightVideo", query => query.descending('video'))
+    const {data, error, isLoading} = useMoralisQuery("HighlightVideo4", query => query.descending('video'))
     // const { Video } = new Mux(process.env.MUX_TOKEN_ID, process.env.MUX_TOKEN_SECRET);
 
     
@@ -102,16 +103,17 @@ export default function Explore() {
                     </div>
             ))
             
-            } */} */}
+            } */} 
             {data &&
                 data.map((item, index) => (
                   
                     <div key={index}>
                     {data[index].get('video') ? 
                       <div className="">
-                    <h1 className="flex justify-center">{data[index].get("title")}</h1>
+                    <h1 className="flex justify-center text-white text-2xl pb-4 ">{data[index].get("title")}</h1>
                       <div className=" flex justify-center pb-6 ">
-                      <HoverVideoPlayer
+                      <VideoPlayer src={"https://stream.mux.com/" + data[index].get("video") + ".m3u8"} />
+                      {/* <HoverVideoPlayer
                             videoSrc={data[index].get("video")}
                             restartOnPaused
                             controls
@@ -133,7 +135,7 @@ export default function Explore() {
                                 <div className="loading-spinner" />
                                 </div>
                             }
-                            />
+                            /> */}
                       </div>
                          {/* <h1>{data[index].get("creatorAddress")}</h1> */}
                          </div>

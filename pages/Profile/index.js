@@ -7,6 +7,7 @@ import ReactPlayer from "react-player";
 import Router from 'next/router'
 import HoverVideoPlayer from 'react-hover-video-player';
 import Hls from "hls.js";
+import VideoPlayer from "../../components/VideoPlayer"
 // import videojs from '@mux/videojs-kit';
 // import '@mux/videojs-kit/dist/index.css';
 
@@ -105,6 +106,45 @@ export default function Profile() {
     console.log(fileurl);
     */
   }
+  // = useRef(null);
+  // const src = ''
+
+  // useEffect(() => {
+  //   let hls;
+  //   if (videoRef.current) {
+  //     const video = videoRef.current;
+
+  //     if (video.canPlayType("application/vnd.apple.mpegurl")) {
+  //       // Some browers (safari and ie edge) support HLS natively
+  //       video.src = src;
+  //     } else if (Hls.isSupported()) {
+  //       // This will run in all other modern browsers
+  //       hls = new Hls();
+  //       hls.loadSource(src);
+  //       hls.attachMedia(video);
+  //     } else {
+  //       console.error("This is a legacy browser that doesn't support MSE");
+  //     }
+
+  //     // I need to use unique ID for each as I have many video elements on the page.
+  //     const videoEl = document.querySelector(`#video--${uuid} video`);
+  //     var hls = new Hls();
+  //     // Bind them together
+  //     hls.loadSource(video);
+  //     hls.attachMedia(video);
+  //   }
+  // }, []);
+
+  const getVideo = (link) => {
+    if(Hls.isSupported()) {
+      const videoElement = document.querySelector('.hls-hover-video');
+      var hls = new Hls();
+       hls.loadSource(link);
+       return hls.attachMedia(videoElement)
+      //return link;
+    }
+    
+  }
 
 
 
@@ -173,19 +213,11 @@ export default function Profile() {
                       <div className="">
                     <h1 className="flex justify-center">{data[index].get("title")}</h1>
                       <div className=" flex justify-center pb-6 ">
-                      <HoverVideoPlayer
-                            videoSrc={() => {
-                              
-                              let src= "https://stream.mux.com/" + data[index].get("video") + ".m3u8";
-                              let vid = src;
-
-                              var hls = new Hls();
-                              hls.loadSource(src);
-                              return hls.attachMedia(vid);
-                              
-                              }}
+                      {/* <HoverVideoPlayer
+                            videoSrc={ getVideo("https://stream.mux.com/" + data[index].get("video") + ".m3u8") }
                             restartOnPaused
                             controls
+                            videoId=".hls-hover-video"
                             mited={false}
                             pausedOverlay={
                                 <img
@@ -204,7 +236,8 @@ export default function Profile() {
                                 <div className="loading-spinner" />
                                 </div>
                             }
-                            />
+                            /> */}
+                            <VideoPlayer src={"https://stream.mux.com/" + data[index].get("video") + ".m3u8"}/>
                       </div>
                          {/* <h1>{data[index].get("creatorAddress")}</h1> */}
                          </div>
