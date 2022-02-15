@@ -5,5 +5,14 @@ module.exports = {
     // ...
     globalObject: 'this',
   },
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/Explore',
+        permanent: true,
+      },
+    ]
+  },
  
 }

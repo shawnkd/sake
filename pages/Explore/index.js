@@ -16,7 +16,7 @@ export default function Explore() {
     //const src = "https://stream.mux.com/{PLAYBACK_ID}.m3u8";
 
     const { isInitialized, isAuthenticated, user } = useMoralis();
-    const {data, error, isLoading} = useMoralisQuery("HighlightVideo4", query => query.descending('video'))
+    const {data, error, isLoading} = useMoralisQuery("HighlightVideo4", query => query.descending('createdAt'))
     // const { Video } = new Mux(process.env.MUX_TOKEN_ID, process.env.MUX_TOKEN_SECRET);
 
     

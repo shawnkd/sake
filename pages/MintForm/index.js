@@ -340,37 +340,37 @@ export default function MintForm() {
       });
 
       
-      useEffect(() => {
+      // useEffect(() => {
         
-        // if(uploadDone && uploadId && !uploaded && (index<1)) {
+      //   // if(uploadDone && uploadId && !uploaded && (index<1)) {
           
-          if(data && data.upload && data.upload.status === 'asset_created')
-          {
+      //     if(data && data.upload && data.upload.status === 'asset_created')
+      //     {
           
-          //setAsset(data.upload.asset_id)
-          console.log("status: ", data && data.upload && data.upload.status)
-          console.log("asset id: ", data && data.upload && data.upload.asset_id)
+      //     //setAsset(data.upload.asset_id)
+      //     console.log("status: ", data && data.upload && data.upload.status)
+      //     console.log("asset id: ", data && data.upload && data.upload.asset_id)
           
           
-          // console.log("playback id: ", assetData && assetData.asset && assetData.asset.playback_id)
+      //     // console.log("playback id: ", assetData && assetData.asset && assetData.asset.playback_id)
 
-          index++;
+      //     index++;
 
-          console.log('getting asset info')
-          // startGetAsset()
-          //getUpload()
+      //     console.log('getting asset info')
+      //     // startGetAsset()
+      //     //getUpload()
           
-          console.log(assetData && assetData.asset && assetData.asset.playback_id, "playback_id")
+      //     console.log(assetData && assetData.asset && assetData.asset.playback_id, "playback_id")
 
-          console.log("start upload to moralis",highlight, " and ", assetData && assetData.asset)
-          // saveAsset(assetData && assetData.asset && assetData.asset.playback_id)
+      //     console.log("start upload to moralis",highlight, " and ", assetData && assetData.asset)
+      //     // saveAsset(assetData && assetData.asset && assetData.asset.playback_id)
           
-          console.log(index, "index")
-        }
+      //     console.log(index, "index")
+      //   }
       
-        // }
+      //   // }
       
-      }, [data && data.upload && data.upload.asset_id])
+      // }, [data && data.upload && data.upload.asset_id])
 
 
 
