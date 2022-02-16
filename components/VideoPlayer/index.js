@@ -43,7 +43,8 @@ export default function VideoPlayer({src}) {
       <video
         controls
         ref={videoRef}
-        style={{ width: "100%", maxWidth: "500px" }}
+        style={{ width: "100%", maxWidth: "1600px" }}
+        className="rounded-lg"
       />
 
       {/* <HoverVideoPlayer

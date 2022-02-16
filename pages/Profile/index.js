@@ -147,8 +147,8 @@ export default function Profile() {
         <Header/>
             {isAuthenticated ? (
               <div>
-        <h1 className="flex justify-center text-2xl">Profile</h1>
-        <h1 className="flex justify-center text-md font-bold p-5" >{user.get("ethAddress")}</h1>
+        <h1 className="flex justify-center text-2xl font-bold text-white">Profile</h1>
+        <h1 className="flex justify-center text-md font-bold p-5 text-white" >{user.get("ethAddress")}</h1>
         </div>
       ) : null}
       <main className="">
@@ -195,7 +195,7 @@ export default function Profile() {
           </div>
         ) : null}
         <div className="flex justify-center">
-          <button className="p-5">my videos</button>
+          <button className="p-5 font-bold text-white">my videos</button>
         </div>
 
         {data &&
@@ -204,7 +204,9 @@ export default function Profile() {
                     <div key={index}>
                     {data[index].get('creatorAddress') === user.get("ethAddress")  ? 
                       <div className="">
-                    <h1 className="flex justify-center">{data[index].get("title")}</h1>
+                    <h1 className="flex justify-center font-bold text-white">{data[index].get("title")}</h1>
+                    <h1 className="p-4 flex justify-center font-bold text-white">{data[index].get("creatorAddress")}</h1>
+
                       <div className=" flex justify-center pb-6 ">
                       {/* <HoverVideoPlayer
                             videoSrc={ getVideo("https://stream.mux.com/" + data[index].get("video") + ".m3u8") }
@@ -232,7 +234,6 @@ export default function Profile() {
                             /> */}
                             <VideoPlayer src={"https://stream.mux.com/" + data[index].get("video") + ".m3u8"}/>
                       </div>
-                         {/* <h1>{data[index].get("creatorAddress")}</h1> */}
                          </div>
                      : null}
                     </div>
