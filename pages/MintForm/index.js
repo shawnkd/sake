@@ -1,5 +1,5 @@
 import {useMoralis, useMoralisFile} from 'react-moralis';
-import { useState, useRef, useEffect, } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import ReactPlayer from "react-player";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -33,7 +33,7 @@ export default function MintForm() {
   const [savedToDB, setSavedToDB] = useState(0);
   const [playback, setPlayback] = useState();
 
-  const [asset, setAsset] = useState(null);
+  const [asset, setAsset] = useState();
     const [fileUrl, setFileUrl] = useState(null);
     const [Error, setError] = useState("");
     const [uploaded, setUploaded] = useState(false);
@@ -63,6 +63,10 @@ export default function MintForm() {
 
       const { data: assetData } = useSWR(`/api/asset/${data && data.upload && data.upload.asset_id}`, fetcher)
 
+      const {data: webhookData} = useSWR(() => ('/api/webhooks', {method: 'POST'}, { refreshInterval: 500 }))
+
+      
+      
       
 
       //const { assetData, assetError } = useSWR(`/api/asset/${data && data.upload && data.upload.asset_id}`, fetcher)
@@ -71,8 +75,8 @@ export default function MintForm() {
       // const { assetData, assetError } = useSWR(`/api/asset/${asset}`, fetcher)
       
       
-      console.log(data && data.upload)
-      console.log(assetData && assetData.asset)
+      
+      
       
       // console.log("status: ", data && data.upload && data.upload.status)
       // console.log("asset: ", data && data.upload && data.upload.asset_id)
@@ -135,23 +139,6 @@ export default function MintForm() {
         }
       }
 
-      const getAsset = async () => {
-        try {
-          return fetch(`/api/asset/`, {
-            method: 'GET',
-          })
-          .then((res) => res.json()
-          .then(({asset}) => {
-            //setAsset(asset_id)
-            console.log("asset", asset)
-            
-          }))
-        } catch {
-          console.error('Error in getting asset', e); // eslint-disable-line no-console
-            setErrorMessage('Error getting asset');
-        }
-      }
-
 
       const startUpload = async (file) => {
         console.log("start upload");
@@ -184,37 +171,6 @@ export default function MintForm() {
         }
         setUploadDone(true);
       };
-
-      const startGetAsset = async () => {
-        console.log("start get asset");
-  
-        try {
-          const get = getAsset({
-            upload_id: uploadId
-          });
-
-          
-          await console.log(get, "get")
-    
-          get.on('error', (err) => {
-            setErrorMessage(err.detail);
-          });
-    
-          get.on('progress', (progress) => {
-            //setProgress(Math.floor(progress.detail));
-          });
-    
-          get.on('success', () => {
-            console.log('success upload')
-            
-          });
-        } catch (err) {
-          setErrorMessage(err.toString());
-          console.log(errorMessage)
-        }
-        
-      };
-
 
       const saveAsset = async (id) => {
         console.log("start save asset")
@@ -313,21 +269,22 @@ export default function MintForm() {
           supply: Yup.number().positive().integer().required("Required ⚠️"),
           price: Yup.number().positive().required("Required ⚠️"),
         }),
-        onSubmit: async (values, { setSubmitting }) => {
-          await setTimeout( () => {
+        onSubmit:  (values, { setSubmitting }) => {
+          setTimeout(async () => {
 
             console.log("submit")
             setSubmitting(false)
 
             if(!uploadDone) {
-            startUpload(values.file)
+            await startUpload(values.file)
             }
+
             console.log(uploadId, "uploadId")
 
             //console.log(upload, 'upload')
             console.log(highlight)
 
-            setHighlight({
+            await setHighlight({
               creatorAddress: user.get("ethAddress").toString(),
               title: values.title,
               description: values.description,
@@ -335,62 +292,47 @@ export default function MintForm() {
               supply: values.supply,
               price: values.price,
             }); 
-          }, 400);
+
+            // if(assetData && assetData.asset && assetData.asset.playback_id) {
+            //   await console.log(assetData.asset.playback_id, "playback_id")
+            //   await console.log("start upload to moralis",highlight, " and ", assetData && assetData.asset)
+            //   await saveAsset(assetData && assetData.asset && assetData.asset.playback_id)  
+            // }
+
+            
+          }, 100);
         },
       });
 
       
-      // useEffect(() => {
-        
-      //   // if(uploadDone && uploadId && !uploaded && (index<1)) {
-          
-      //     if(data && data.upload && data.upload.status === 'asset_created')
-      //     {
-          
-      //     //setAsset(data.upload.asset_id)
-      //     console.log("status: ", data && data.upload && data.upload.status)
-      //     console.log("asset id: ", data && data.upload && data.upload.asset_id)
-          
-          
-      //     // console.log("playback id: ", assetData && assetData.asset && assetData.asset.playback_id)
-
-      //     index++;
-
-      //     console.log('getting asset info')
-      //     // startGetAsset()
-      //     //getUpload()
-          
-      //     console.log(assetData && assetData.asset && assetData.asset.playback_id, "playback_id")
-
-      //     console.log("start upload to moralis",highlight, " and ", assetData && assetData.asset)
-      //     // saveAsset(assetData && assetData.asset && assetData.asset.playback_id)
-          
-      //     console.log(index, "index")
-      //   }
       
-      //   // }
-      
-      // }, [data && data.upload && data.upload.asset_id])
 
+      useEffect(() => {
+        setTimeout(() => {
+          console.log(data && data.upload)
+          console.log(assetData && assetData.asset)
+          setAsset(assetData)
+          console.log(asset, "asset log")
+        }, 100)
 
-
+      })
 
 
       useEffect(() => {
-        if(assetData && assetData.asset && assetData.asset.playback_id) {
-          console.log(assetData.asset.playback_id, "playback_id")
-          console.log("start upload to moralis",highlight, " and ", assetData && assetData.asset)
-          saveAsset(assetData && assetData.asset && assetData.asset.playback_id)
 
+        
+        if(asset && asset.asset && asset.asset.playback_id) {
+          console.log(asset.asset.playback_id, "playback_id")
+          console.log("start upload to moralis",highlight, " and ", asset && asset.asset)
+          saveAsset(asset && asset.asset && asset.asset.playback_id)  
+          setSavedToDB(true)
         }
-      }, [assetData && assetData.asset && assetData.asset.playback_id])
+        
+      }, [asset && asset.asset && asset.asset.playback_id])
       
-      // useEffect(() => {
-      //   if(uploadDone && uploadId) {
-      //     console.log('getting asset info')
-      //     startGet()
-      //   }
-      // }, [uploadDone])
+      useEffect(() => {
+        console.log(asset)
+      })
       
 
     return(
@@ -401,7 +343,7 @@ export default function MintForm() {
         <div className="w-full max-w-xs ">
         
         
-        { isAuthenticated  ? <div>
+        { isAuthenticated && !savedToDB ? <div>
             <h1 className="text-2xl text-white font-bold pt-8">Create a Highlight</h1>
             <form 
             className="rounded px-8 pt-6 pb-8 mb-4"
@@ -414,7 +356,7 @@ export default function MintForm() {
                 {/* <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="Username"></input> */}
                 <input {...formik.getFieldProps("title")} type="text" id="title" className="px-4 py-3 rounded-md"/>
                 {formik.touched.title && formik.errors.title ? (
-                  <div>{formik.errors.title}</div>
+                  <div className="text-white">{formik.errors.title}</div>
                 ) : null}
                 </div>
                 <div className="mb-4">
@@ -429,7 +371,7 @@ export default function MintForm() {
                 />
                 </div>
                 {formik.touched.description && formik.errors.description ? (
-                  <div>{formik.errors.description}</div>
+                  <div className="text-white">{formik.errors.description}</div>
                 ) : null}
 
                 <div className="mb-4">
@@ -451,7 +393,7 @@ export default function MintForm() {
                 <input onChange={onChange} className="px-5 text-white" type="file" ref={inputRef}/>
                 </div>
                 {formik.touched.file && formik.errors.file ? (
-                  <div>{formik.errors.file}</div>
+                  <div className="text-white">{formik.errors.file}</div>
                 ) : null}
 
 
@@ -469,7 +411,7 @@ export default function MintForm() {
                   />
                 </div>
                 {formik.touched.supply && formik.errors.supply ? (
-                  <div>{formik.errors.supply}</div>
+                  <div className="text-white">{formik.errors.supply}</div>
                 ) : null}
 
 
@@ -480,11 +422,11 @@ export default function MintForm() {
                 <input id="price" {...formik.getFieldProps("price")} type="text" className="px-4 py-3 rounded-md"/>
                 </div>
                 {formik.touched.price && formik.errors.price ? (
-                  <div>{formik.errors.price}</div>
+                  <div className="text-white">{formik.errors.price}</div>
                 ) : null}
 
                 <div className="flex items-center justify-center">
-                { !isUploading ?
+                { !isPreparing ?
                 <button type="submit" className="bg-new-green hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
                     Mint
                 </button>
@@ -500,6 +442,7 @@ export default function MintForm() {
             </form>
             </div>:<div className="flex items-center justify-center space-x-2">
                     
+                    <a href="/" className="text-white">See your Highlight</a>
                     
                     </div>
  }

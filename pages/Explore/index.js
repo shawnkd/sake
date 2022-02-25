@@ -141,14 +141,14 @@ export default function Explore() {
                                 </div>
                             }
                             /> */}
-                            <a href="#" className="p-4 flex flex-col items-center bg-white rounded-lg border shadow-md md:flex-row md:max-w-xl hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
+                            <a href="#" className="p-4 px-5 py-5 flex flex-col items-center bg-white rounded-lg border shadow-md md:flex-row md:max-w-xl hover:bg-gray-100 dark:border-gray-700 dark:bg-custom-gray dark:hover:bg-gray-900">
                         <VideoPlayer className="object-cover w-full h-96 rounded-t-lg md:h-auto md:w-48 md:rounded-none md:rounded-l-lg" src={"https://stream.mux.com/" + data[index].get("video") + ".m3u8"}/>
                         
-                        <div className="flex flex-col justify-between p-4 leading-normal">
-                            <h1 className="flex justify-left text-white font-bold text-2xl pb-2 ">{data[index].get("title")}</h1>
+                        <div className="flex flex-col justify-between p-4  leading-normal">
+                            <h1 className="flex justify-center text-white font-bold text-2xl pb-2 ">{data[index].get("title")}</h1>
                             <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{data[index].get("description")}</p>
-                            <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Mint</button>
-                            <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">${data[index].get("price")} MATIC</p>
+                            <button type="button" className="text-white bg-new-green hover:bg-new-green-800 focus:ring-4 focus:ring-new-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center hover:bg-gray-400 mr-2 mb-2 dark:bg-new-green-600 dark:hover:bg-new-green-700 dark:focus:ring-new-green-800">Mint</button>
+                            <p className="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800">${data[index].get("price")} MATIC</p>
 
 
                             

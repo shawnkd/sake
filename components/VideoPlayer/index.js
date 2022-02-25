@@ -19,7 +19,7 @@ export default function VideoPlayer({src}) {
   
         if (video.canPlayType("application/vnd.apple.mpegurl")) {
           // Some browers (safari and ie edge) support HLS natively
-          video.videoSrc = src;
+          video.src = src;
         } else if (Hls.isSupported()) {
 
             const videoEl = document.getElementById('hls-hover-video');
@@ -42,8 +42,9 @@ export default function VideoPlayer({src}) {
         <div>
       <video
         controls
+        autoplay
         ref={videoRef}
-        style={{ width: "100%", maxWidth: "1600px" }}
+        style={{ width: "100%", maxWidth: "1600px"}}
         className="rounded-lg"
       />
 

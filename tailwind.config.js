@@ -6,9 +6,9 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'custom-gray': '#2e3a48',
-        'new-green': '#7997a1',
-        'gg': '#283138',
+        'custom-gray': '#04052E',
+        'new-green': '#6367f2',
+        'gg': '#22007c',
       }
     },
   },
