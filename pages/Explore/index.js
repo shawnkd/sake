@@ -1,5 +1,6 @@
 import {useMoralis, useMoralisQuery} from 'react-moralis'
 import Header from "../../components/Header"
+import Link from 'next/link'
 const Moralis = require("moralis");
 import ReactPlayer from "react-player";
 import React, { useEffect, useRef } from "react";
@@ -141,7 +142,8 @@ export default function Explore() {
                                 </div>
                             }
                             /> */}
-                            <a href="#" className="p-4 px-5 py-5 flex flex-col items-center bg-white rounded-lg border shadow-md md:flex-row md:max-w-xl hover:bg-gray-100 dark:border-gray-700 dark:bg-custom-gray dark:hover:bg-gray-900">
+                            <Link href="/Post" >
+                            <div className="p-4 px-5 py-5 flex flex-col items-center bg-white rounded-lg border shadow-md md:flex-row md:max-w-xl hover:bg-gray-100 dark:border-gray-700 dark:bg-custom-gray dark:hover:bg-gray-900">
                         <VideoPlayer className="object-cover w-full h-96 rounded-t-lg md:h-auto md:w-48 md:rounded-none md:rounded-l-lg" src={"https://stream.mux.com/" + data[index].get("video") + ".m3u8"}/>
                         
                         <div className="flex flex-col justify-between p-4  leading-normal">
@@ -158,7 +160,8 @@ export default function Explore() {
                         </div>
                         
                         
-                    </a>
+                        </div>
+                    </Link>
                       </div>
                          {/* <h1 className="flex font-bold text-white justify-left pb-2">created at {JSON.stringify(data[index].get("createdAt"))}</h1> */}
                          {/* <p className="flex font-bold justify-left text-white text-md pb-6 ">{data[index].get("creatorAddress")}</p> */}

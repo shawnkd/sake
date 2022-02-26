@@ -1,5 +1,5 @@
 import {useMoralis, useMoralisFile} from 'react-moralis';
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useLayoutEffect, useCallback } from "react";
 import ReactPlayer from "react-player";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -59,11 +59,29 @@ export default function MintForm() {
       }
     
 
-      const { data: data, error } = useSWR(`/api/upload/${uploadId}`, fetcher)
+      const { data: data, error } = useSWR(`/api/upload/${uploadId}`, fetcher, {refreshInterval: 1000})
 
-      const { data: assetData } = useSWR(`/api/asset/${data && data.upload && data.upload.asset_id}`, fetcher)
+      const { data: assetData } = useSWR(`/api/asset/${data && data.upload && data.upload.asset_id}`, fetcher, {
+        onErrorRetry: (error, revalidate, { retryCount }) => {
+          // Never retry on 404.
+          if (error.status === 404) return
+      
+          // // Never retry for a specific key.
+          // if (key === '/api/upload') return
+      
+          // Only retry up to 10 times.
+          if (retryCount >= 10) return
+      
+          // Retry after 5 seconds.
+          setInterval(() => revalidate({ retryCount }), 1000)
+        },
+        revalidateIfStale: true,
+        revalidateOnMount: true,
+       refreshInterval: 1000,
+      }
+        )
 
-      const {data: webhookData} = useSWR(() => ('/api/webhooks', {method: 'POST'}, { refreshInterval: 500 }))
+      // const {data: webhookData} = useSWR(() => ('/api/webhooks', {method: 'POST'}, { refreshInterval: 500 }))
 
       
       
@@ -269,14 +287,14 @@ export default function MintForm() {
           supply: Yup.number().positive().integer().required("Required ⚠️"),
           price: Yup.number().positive().required("Required ⚠️"),
         }),
-        onSubmit:  (values, { setSubmitting }) => {
-          setTimeout(async () => {
+        onSubmit: async (values, { setSubmitting }) => {
+          await setTimeout(() => {
 
             console.log("submit")
             setSubmitting(false)
 
             if(!uploadDone) {
-            await startUpload(values.file)
+            startUpload(values.file)
             }
 
             console.log(uploadId, "uploadId")
@@ -284,7 +302,7 @@ export default function MintForm() {
             //console.log(upload, 'upload')
             console.log(highlight)
 
-            await setHighlight({
+            setHighlight({
               creatorAddress: user.get("ethAddress").toString(),
               title: values.title,
               description: values.description,
@@ -309,29 +327,40 @@ export default function MintForm() {
 
       useEffect(() => {
         setTimeout(() => {
+          if(data && data.upload){
           console.log(data && data.upload)
           console.log(assetData && assetData.asset)
           setAsset(assetData)
           console.log(asset, "asset log")
-        }, 100)
+          
+          }
+        }, 3000)
 
       })
 
 
       useEffect(() => {
-
         
+        // setInterval(() => {
         if(asset && asset.asset && asset.asset.playback_id) {
+          
           console.log(asset.asset.playback_id, "playback_id")
-          console.log("start upload to moralis",highlight, " and ", asset && asset.asset)
+          console.log("start upload to moralis", highlight, " and ", asset && asset.asset)
           saveAsset(asset && asset.asset && asset.asset.playback_id)  
           setSavedToDB(true)
+        } else {
+          console.log('asset not uploaded to mux yet')
         }
+      // }, 1000)
         
-      }, [asset && asset.asset && asset.asset.playback_id])
+      }, [asset && asset.asset && asset.asset.playback_id] )
       
       useEffect(() => {
-        console.log(asset)
+        
+        if(savedToDB){
+        console.log(asset, "saved")
+        } 
+      
       })
       
 

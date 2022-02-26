@@ -24,7 +24,7 @@ export default function Header() {
     return(
         <div className="flex p-4 justify-center items-center content-center">
         <Link href="/Explore">
-        <a className="text-2xl font-bold font-sans p-3 text-white"> molly 📸 </a>
+        <a className="text-2xl font-bold font-sans p-3 text-white backdrop-blur"> molly 🎮 </a>
         </Link>
 
 {isAuthenticated ? <div className="flex flex-auto justify-center items-center place-content-center justify-self-center">
